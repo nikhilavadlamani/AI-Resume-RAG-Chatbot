@@ -1,0 +1,29 @@
+# GitHub Projects
+
+## AI Resume LLM RAG Chatbot
+A sophisticated chatbot that uses Retrieval-Augmented Generation (RAG) to answer questions about resumes and GitHub projects. Built with LangChain, Streamlit, and HuggingFace models.
+
+**Technologies:** Python, LangChain, Streamlit, HuggingFace, PyPDF2, scikit-learn
+
+**Features:**
+- PDF resume text extraction
+- Local vector embeddings using TF-IDF
+- Cosine similarity search
+- LangChain integration with HuggingFace models
+- Streamlit web interface
+- GitHub projects integration
+
+## Project 2: Data Analysis Dashboard
+Interactive dashboard for data visualization and analysis.
+
+**Technologies:** Python, Pandas, Plotly, Dash
+
+## Project 3: Machine Learning API
+REST API for machine learning model serving.
+
+**Technologies:** Python, FastAPI, scikit-learn, Docker
+
+## Project 4: Web Scraping Tool
+Automated web scraping and data collection tool.
+
+**Technologies:** Python, BeautifulSoup, Selenium, MongoDB
