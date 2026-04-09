@@ -30,12 +30,14 @@ def ensure_index_exists() -> None:
 
 
 def format_source_label(source) -> str:
-    return f"{source.metadata.get('section', 'Document')} - {source.metadata.get('source', 'Unknown source')}"
+    score = source.metadata.get("score")
+    score_suffix = f" (score: {score})" if score is not None else ""
+    return f"{source.metadata.get('section', 'Document')} - {source.metadata.get('source', 'Unknown source')}{score_suffix}"
 
 
 def main():
     st.title("AI Resume LLM RAG Chatbot")
-    st.caption("Ask questions about the candidate's resume and GitHub projects using grounded retrieval.")
+    st.caption("Ask exact questions about the candidate's resume and projects. Answers stay grounded in the indexed documents.")
 
     with st.sidebar:
         st.subheader("Project Setup")
@@ -55,9 +57,12 @@ def main():
 
         st.markdown("Sample questions")
         sample_questions = [
-            "What projects has this candidate built?",
-            "What technical skills are mentioned in the resume?",
-            "Summarize the candidate's work experience.",
+            "Can you summarize my profile?",
+            "What are my top skills?",
+            "How many years of experience do I have?",
+            "Am I a good fit for an AI Engineer role?",
+            "Write a response to a recruiter reaching out for an AI role.",
+            "Give me projects to improve my resume.",
         ]
         for question in sample_questions:
             if st.button(question, use_container_width=True):
@@ -67,13 +72,18 @@ def main():
         st.session_state["messages"] = [
             {
                 "role": "assistant",
-                "content": "Ask me about the resume, experience, skills, or GitHub projects.",
+                "content": (
+                    "I can help with resume summaries, skills, work experience, project explanations, "
+                    "AI job fit, recruiter replies, and interview-style questions."
+                ),
             }
         ]
 
     for message in st.session_state["messages"]:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
+            if message.get("confidence"):
+                st.caption(f"Answer confidence: {message['confidence'].title()}")
             if message.get("sources"):
                 with st.expander("Sources"):
                     for source in message["sources"]:
@@ -96,6 +106,7 @@ def main():
                 result = ask_question(chain, user_question)
 
             st.markdown(result["answer"])
+            st.caption(f"Answer confidence: {result.get('confidence', 'unknown').title()}")
             with st.expander("Sources"):
                 for source in result["sources"]:
                     st.markdown(f"**{format_source_label(source)}**")
@@ -106,6 +117,7 @@ def main():
                 "role": "assistant",
                 "content": result["answer"],
                 "sources": result["sources"],
+                "confidence": result.get("confidence"),
             }
         )
 

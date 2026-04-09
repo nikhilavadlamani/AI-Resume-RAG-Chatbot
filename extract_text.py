@@ -1,9 +1,18 @@
 from pathlib import Path
 
-from pypdf import PdfReader
+try:
+    from pypdf import PdfReader
+except ModuleNotFoundError:
+    try:
+        from PyPDF2 import PdfReader
+    except ModuleNotFoundError as exc:
+        raise ModuleNotFoundError(
+            "No PDF reader library found. Install `pypdf` or `PyPDF2` in the active environment."
+        ) from exc
 
 
-DATA_DIR = Path("data")
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
 
 
 def extract_pdf_text(filepath: Path) -> str:
@@ -28,8 +37,10 @@ def _find_first_matching_file(patterns: list[str], data_dir: Path) -> Path | Non
     return None
 
 
-def load_documents(data_dir: str = "data") -> list[dict[str, str]]:
+def load_documents(data_dir: str | Path = DATA_DIR) -> list[dict[str, str]]:
     base_dir = Path(data_dir)
+    if not base_dir.is_absolute():
+        base_dir = BASE_DIR / base_dir
     documents: list[dict[str, str]] = []
 
     resume_path = _find_first_matching_file(["*.pdf", "*.PDF"], base_dir)
@@ -58,7 +69,7 @@ def load_documents(data_dir: str = "data") -> list[dict[str, str]]:
     return [doc for doc in documents if doc["content"].strip()]
 
 
-def load_all_documents(data_dir: str = "data") -> str:
+def load_all_documents(data_dir: str | Path = DATA_DIR) -> str:
     all_sections = []
     for document in load_documents(data_dir):
         all_sections.append(f"=== {document['section'].upper()} ({document['source']}) ===")
