@@ -1,0 +1,10 @@
+[
+  {
+    "question": "What are my top skills?",
+    "expected_route": "skills"
+  },
+  {
+    "question": "Write a response to a recruiter for an AI role.",
+    "expected_route": "recruiter_reply"
+  }
+]
